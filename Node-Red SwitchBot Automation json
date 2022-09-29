@@ -1,0 +1,428 @@
+[
+    {
+        "id": "d07b44383b50f590",
+        "type": "tab",
+        "label": "Kitchen Lights",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e1a35d9de98b0cb1",
+        "type": "server-state-changed",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "server": "315411fb.df557e",
+        "version": 4,
+        "exposeToHomeAssistant": false,
+        "haConfig": [
+            {
+                "property": "name",
+                "value": ""
+            },
+            {
+                "property": "icon",
+                "value": ""
+            }
+        ],
+        "entityidfilter": "binary_sensor.motion_sensor_912d_light",
+        "entityidfiltertype": "exact",
+        "outputinitially": true,
+        "state_type": "habool",
+        "haltifstate": "",
+        "halt_if_type": "str",
+        "halt_if_compare": "is",
+        "outputs": 1,
+        "output_only_on_state_change": false,
+        "for": "0",
+        "forType": "num",
+        "forUnits": "minutes",
+        "ignorePrevStateNull": false,
+        "ignorePrevStateUnknown": false,
+        "ignorePrevStateUnavailable": false,
+        "ignoreCurrentStateUnknown": false,
+        "ignoreCurrentStateUnavailable": false,
+        "outputProperties": [
+            {
+                "property": "payload",
+                "propertyType": "msg",
+                "value": "",
+                "valueType": "entityState"
+            }
+        ],
+        "x": 230,
+        "y": 380,
+        "wires": [
+            [
+                "87d36309077b1333"
+            ]
+        ]
+    },
+    {
+        "id": "5c158c36e73ff20c",
+        "type": "trigger-state",
+        "z": "d07b44383b50f590",
+        "name": "motionInKitchen",
+        "server": "315411fb.df557e",
+        "version": 2,
+        "exposeToHomeAssistant": false,
+        "haConfig": [
+            {
+                "property": "name",
+                "value": ""
+            },
+            {
+                "property": "icon",
+                "value": ""
+            }
+        ],
+        "entityid": "binary_sensor.motion_sensor_912d_motion_detected",
+        "entityidfiltertype": "exact",
+        "debugenabled": false,
+        "constraints": [],
+        "inputs": 1,
+        "outputs": 2,
+        "customoutputs": [],
+        "outputinitially": true,
+        "state_type": "habool",
+        "enableInput": true,
+        "x": 360,
+        "y": 260,
+        "wires": [
+            [
+                "4bafe782ea600a31"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "9f813bdd5b248343",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 390,
+        "y": 220,
+        "wires": [
+            [
+                "4bafe782ea600a31"
+            ]
+        ]
+    },
+    {
+        "id": "288fd49124890e81",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 390,
+        "y": 300,
+        "wires": [
+            [
+                "4bafe782ea600a31"
+            ]
+        ]
+    },
+    {
+        "id": "87d36309077b1333",
+        "type": "function",
+        "z": "d07b44383b50f590",
+        "name": "isBright",
+        "func": "flow.set(\"isBright\",msg.payload);\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 380,
+        "wires": [
+            [
+                "68382701c1dcb977"
+            ]
+        ]
+    },
+    {
+        "id": "68382701c1dcb977",
+        "type": "function",
+        "z": "d07b44383b50f590",
+        "name": "kitchenLightFunction",
+        "func": "var isBright=flow.get(\"isBright\");\nvar motion = flow.get(\"motion\");\n\nif (isBright === false && motion === true) {\n    msg.payload = \"On\";\n    return msg;\n}\nelse {\n    msg.payload=\"Off\";\n    return msg;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 380,
+        "wires": [
+            [
+                "39c80da5e3f4c7f9"
+            ]
+        ]
+    },
+    {
+        "id": "4bafe782ea600a31",
+        "type": "function",
+        "z": "d07b44383b50f590",
+        "name": "motion",
+        "func": "flow.set(\"motion\",msg.payload);\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 260,
+        "wires": [
+            [
+                "68382701c1dcb977"
+            ]
+        ]
+    },
+    {
+        "id": "39c80da5e3f4c7f9",
+        "type": "switch",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "On",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Off",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 930,
+        "y": 380,
+        "wires": [
+            [
+                "4f5e510724899dfc",
+                "cccdd3bc542ec8ad"
+            ],
+            [
+                "4f5e510724899dfc"
+            ]
+        ]
+    },
+    {
+        "id": "cccdd3bc542ec8ad",
+        "type": "api-call-service",
+        "z": "d07b44383b50f590",
+        "name": "kitchenLightsOn",
+        "server": "315411fb.df557e",
+        "version": 5,
+        "debugenabled": false,
+        "domain": "homeassistant",
+        "service": "turn_on",
+        "areaId": [],
+        "deviceId": [],
+        "entityId": [
+            "light.kitchen_light"
+        ],
+        "data": "",
+        "dataType": "json",
+        "mergeContext": "",
+        "mustacheAltTags": false,
+        "outputProperties": [],
+        "queue": "none",
+        "x": 1280,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "88c4a7cd19b256ff",
+        "type": "api-call-service",
+        "z": "d07b44383b50f590",
+        "name": "kitchenLightsOff",
+        "server": "315411fb.df557e",
+        "version": 5,
+        "debugenabled": false,
+        "domain": "homeassistant",
+        "service": "turn_off",
+        "areaId": [],
+        "deviceId": [],
+        "entityId": [
+            "light.kitchen_light"
+        ],
+        "data": "",
+        "dataType": "json",
+        "mergeContext": "",
+        "mustacheAltTags": false,
+        "outputProperties": [],
+        "queue": "none",
+        "x": 1280,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4f5e510724899dfc",
+        "type": "trigger",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "op1": "",
+        "op2": "false",
+        "op1type": "nul",
+        "op2type": "bool",
+        "duration": "1",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "min",
+        "reset": "true",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 1110,
+        "y": 420,
+        "wires": [
+            [
+                "88c4a7cd19b256ff"
+            ]
+        ]
+    },
+    {
+        "id": "9af4b80568320a8c",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Off",
+        "payloadType": "str",
+        "x": 770,
+        "y": 420,
+        "wires": [
+            [
+                "39c80da5e3f4c7f9"
+            ]
+        ]
+    },
+    {
+        "id": "886ff75db6d764c5",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "On",
+        "payloadType": "str",
+        "x": 770,
+        "y": 340,
+        "wires": [
+            [
+                "39c80da5e3f4c7f9"
+            ]
+        ]
+    },
+    {
+        "id": "fe2ade024ba2971a",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 390,
+        "y": 340,
+        "wires": [
+            [
+                "87d36309077b1333"
+            ]
+        ]
+    },
+    {
+        "id": "f976984e9a1c375b",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 390,
+        "y": 420,
+        "wires": [
+            [
+                "87d36309077b1333"
+            ]
+        ]
+    },
+    {
+        "id": "315411fb.df557e",
+        "type": "server",
+        "name": "Home Assistant",
+        "version": 4,
+        "addon": true,
+        "rejectUnauthorizedCerts": true,
+        "ha_boolean": "y|yes|true|on|home|open",
+        "connectionDelay": true,
+        "cacheJson": true,
+        "heartbeat": false,
+        "heartbeatInterval": 30,
+        "areaSelector": "friendlyName",
+        "deviceSelector": "friendlyName",
+        "entitySelector": "friendlyName",
+        "statusSeparator": "at: ",
+        "statusYear": "hidden",
+        "statusMonth": "short",
+        "statusDay": "numeric",
+        "statusHourCycle": "h23",
+        "statusTimeFormat": "h:m"
+    }
+]
