@@ -11,29 +11,19 @@
         "id": "e1a35d9de98b0cb1",
         "type": "server-state-changed",
         "z": "d07b44383b50f590",
-        "name": "",
+        "name": "brightInKitchen",
         "server": "315411fb.df557e",
-        "version": 4,
-        "exposeToHomeAssistant": false,
-        "haConfig": [
-            {
-                "property": "name",
-                "value": ""
-            },
-            {
-                "property": "icon",
-                "value": ""
-            }
-        ],
-        "entityidfilter": "binary_sensor.motion_sensor_912d_light",
-        "entityidfiltertype": "exact",
-        "outputinitially": true,
-        "state_type": "habool",
-        "haltifstate": "",
-        "halt_if_type": "str",
-        "halt_if_compare": "is",
+        "version": 5,
         "outputs": 1,
-        "output_only_on_state_change": false,
+        "exposeAsEntityConfig": "",
+        "entityId": "binary_sensor.motion_sensor_912d_light",
+        "entityIdType": "exact",
+        "outputInitially": true,
+        "stateType": "habool",
+        "ifState": "",
+        "ifStateType": "str",
+        "ifStateOperator": "is",
+        "outputOnlyOnStateChange": false,
         "for": "0",
         "forType": "num",
         "forUnits": "minutes",
@@ -50,7 +40,7 @@
                 "valueType": "entityState"
             }
         ],
-        "x": 230,
+        "x": 360,
         "y": 380,
         "wires": [
             [
@@ -64,7 +54,17 @@
         "z": "d07b44383b50f590",
         "name": "motionInKitchen",
         "server": "315411fb.df557e",
-        "version": 2,
+        "version": 3,
+        "inputs": 1,
+        "outputs": 2,
+        "exposeAsEntityConfig": "",
+        "entityId": "binary_sensor.motion_sensor_912d_motion_detected",
+        "entityIdType": "exact",
+        "debugEnabled": false,
+        "constraints": [],
+        "customOutputs": [],
+        "outputInitially": true,
+        "enableInput": true,
         "exposeToHomeAssistant": false,
         "haConfig": [
             {
@@ -76,16 +76,6 @@
                 "value": ""
             }
         ],
-        "entityid": "binary_sensor.motion_sensor_912d_motion_detected",
-        "entityidfiltertype": "exact",
-        "debugenabled": false,
-        "constraints": [],
-        "inputs": 1,
-        "outputs": 2,
-        "customoutputs": [],
-        "outputinitially": true,
-        "state_type": "habool",
-        "enableInput": true,
         "x": 360,
         "y": 260,
         "wires": [
@@ -100,13 +90,22 @@
         "type": "inject",
         "z": "d07b44383b50f590",
         "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
         "repeat": "",
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "true",
-        "payloadType": "bool",
+        "payload": "on",
+        "payloadType": "str",
         "x": 390,
         "y": 220,
         "wires": [
@@ -120,13 +119,22 @@
         "type": "inject",
         "z": "d07b44383b50f590",
         "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
         "repeat": "",
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "false",
-        "payloadType": "bool",
+        "payload": "off",
+        "payloadType": "str",
         "x": 390,
         "y": 300,
         "wires": [
@@ -159,8 +167,9 @@
         "type": "function",
         "z": "d07b44383b50f590",
         "name": "kitchenLightFunction",
-        "func": "var isBright=flow.get(\"isBright\");\nvar motion = flow.get(\"motion\");\n\nif (isBright === false && motion === true) {\n    msg.payload = \"On\";\n    return msg;\n}\nelse {\n    msg.payload=\"Off\";\n    return msg;\n}\nreturn msg;",
+        "func": "var isBright = flow.get(\"isBright\");\nvar motion = flow.get(\"motion\");\nvar isLightOn = flow.get(\"isLightOn\");\nvar timeNow = flow.get(\"time\");\n\nif (timeNow >= '6' && isBright === false && motion === \"on\") {\n    msg.payload = \"On\";\n    return msg;\n}\nelse if (timeNow <= '6' && isBright === true && motion === \"on\") {\n    msg.payload = \"On\";\n    return msg;\n}\nif (isBright === true && isLightOn === false && motion === \"on\") {\n    msg.payload = \"Nothing\";\n //   return msg;\n}\nelse if (isBright === true && isLightOn === true && motion === \"on\") {\n    msg.payload = \"On\";\n    return msg;\n}\nelse if (motion === \"off\"){\n    msg.payload = \"Off\";\n    return msg;\n}",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -180,6 +189,7 @@
         "name": "motion",
         "func": "flow.set(\"motion\",msg.payload);\nreturn msg;\n",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -247,10 +257,12 @@
         "mustacheAltTags": false,
         "outputProperties": [],
         "queue": "none",
-        "x": 1280,
+        "x": 1300,
         "y": 340,
         "wires": [
-            []
+            [
+                "3e5bd88e76657e43"
+            ]
         ]
     },
     {
@@ -273,11 +285,13 @@
         "mergeContext": "",
         "mustacheAltTags": false,
         "outputProperties": [],
-        "queue": "none",
-        "x": 1280,
+        "queue": "first",
+        "x": 1300,
         "y": 420,
         "wires": [
-            []
+            [
+                "d4ef8cecf14e9aa5"
+            ]
         ]
     },
     {
@@ -286,14 +300,14 @@
         "z": "d07b44383b50f590",
         "name": "",
         "op1": "",
-        "op2": "false",
+        "op2": "Off",
         "op1type": "nul",
-        "op2type": "bool",
-        "duration": "1",
+        "op2type": "str",
+        "duration": "120",
         "extend": false,
         "overrideDelay": false,
-        "units": "min",
-        "reset": "true",
+        "units": "s",
+        "reset": "On",
         "bytopic": "all",
         "topic": "topic",
         "outputs": 1,
@@ -404,10 +418,367 @@
         ]
     },
     {
+        "id": "d4ef8cecf14e9aa5",
+        "type": "function",
+        "z": "d07b44383b50f590",
+        "name": "LightOff",
+        "func": "flow.set(\"isLightOn\", false);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1460,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3e5bd88e76657e43",
+        "type": "function",
+        "z": "d07b44383b50f590",
+        "name": "LightOn",
+        "func": "flow.set(\"isLightOn\", true);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1460,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3a77605d8d1c93a5",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "Off",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1130,
+        "y": 460,
+        "wires": [
+            [
+                "88c4a7cd19b256ff"
+            ]
+        ]
+    },
+    {
+        "id": "295073d1844d9fc5",
+        "type": "function",
+        "z": "d07b44383b50f590",
+        "name": "time",
+        "func": "flow.set(\"time\", Number(msg.payload));\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 520,
+        "wires": [
+            [
+                "d0d3a0875dcab4cd",
+                "68382701c1dcb977"
+            ]
+        ]
+    },
+    {
+        "id": "ee7bf8779b125cc3",
+        "type": "moment",
+        "z": "d07b44383b50f590",
+        "name": "Time",
+        "topic": "",
+        "input": "",
+        "inputType": "msg",
+        "inTz": "Europe/London",
+        "adjAmount": 0,
+        "adjType": "days",
+        "adjDir": "add",
+        "format": "HH",
+        "locale": "C",
+        "output": "",
+        "outputType": "msg",
+        "outTz": "Europe/London",
+        "x": 410,
+        "y": 520,
+        "wires": [
+            [
+                "295073d1844d9fc5"
+            ]
+        ]
+    },
+    {
+        "id": "d0d3a0875dcab4cd",
+        "type": "debug",
+        "z": "d07b44383b50f590",
+        "name": "test time",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "ee946b5b27d2d27b",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "time<=00",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "00",
+        "payloadType": "num",
+        "x": 200,
+        "y": 600,
+        "wires": [
+            [
+                "295073d1844d9fc5"
+            ]
+        ]
+    },
+    {
+        "id": "9becba85ce927b88",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "time>=6",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "6",
+        "payloadType": "num",
+        "x": 200,
+        "y": 560,
+        "wires": [
+            [
+                "295073d1844d9fc5"
+            ]
+        ]
+    },
+    {
+        "id": "f4f983e9c60c483e",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 520,
+        "wires": [
+            [
+                "ee7bf8779b125cc3"
+            ]
+        ]
+    },
+    {
+        "id": "9a67f0511562c8a5",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "time>=13",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "13",
+        "payloadType": "num",
+        "x": 200,
+        "y": 480,
+        "wires": [
+            [
+                "295073d1844d9fc5"
+            ]
+        ]
+    },
+    {
+        "id": "659126e22325b4ab",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "time>=14",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "14",
+        "payloadType": "num",
+        "x": 200,
+        "y": 440,
+        "wires": [
+            [
+                "295073d1844d9fc5"
+            ]
+        ]
+    },
+    {
+        "id": "32f416cc917c892b",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "lightIsOn",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1300,
+        "y": 280,
+        "wires": [
+            [
+                "3e5bd88e76657e43"
+            ]
+        ]
+    },
+    {
+        "id": "cba2c1e774598789",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "lightIsOff",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1320,
+        "y": 480,
+        "wires": [
+            [
+                "d4ef8cecf14e9aa5"
+            ]
+        ]
+    },
+    {
+        "id": "46da7e8fdf9ee556",
+        "type": "inject",
+        "z": "d07b44383b50f590",
+        "name": "time<=01",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "01",
+        "payloadType": "num",
+        "x": 200,
+        "y": 640,
+        "wires": [
+            [
+                "295073d1844d9fc5"
+            ]
+        ]
+    },
+    {
         "id": "315411fb.df557e",
         "type": "server",
         "name": "Home Assistant",
-        "version": 4,
+        "version": 5,
         "addon": true,
         "rejectUnauthorizedCerts": true,
         "ha_boolean": "y|yes|true|on|home|open",
@@ -423,6 +794,7 @@
         "statusMonth": "short",
         "statusDay": "numeric",
         "statusHourCycle": "h23",
-        "statusTimeFormat": "h:m"
+        "statusTimeFormat": "h:m",
+        "enableGlobalContextStore": true
     }
 ]
